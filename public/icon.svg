@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+    <radialGradient id="stamp" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef3c7" />
+      <stop offset="100%" stop-color="#fde68a" />
+    </radialGradient>
+  </defs>
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)" />
+  
+  <!-- Parchment Stamp Ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#fde68a" stroke-width="6" stroke-dasharray="14 10" />
+  <circle cx="256" cy="256" r="184" fill="#fef9ee" />
+  
+  <!-- Scale & Ledger Motif -->
+  <!-- Top beam -->
+  <path d="M 160 210 L 352 210" stroke="#78350f" stroke-width="12" stroke-linecap="round" />
+  <!-- Center post -->
+  <path d="M 256 160 L 256 340" stroke="#78350f" stroke-width="14" stroke-linecap="round" />
+  <!-- Center fulcrum triangle -->
+  <polygon points="256,150 240,180 272,180" fill="#b45309" />
+  
+  <!-- Left Pan (Weight / من) -->
+  <path d="M 160 210 L 130 280" stroke="#92400e" stroke-width="4" />
+  <path d="M 160 210 L 190 280" stroke="#92400e" stroke-width="4" />
+  <path d="M 110 280 Q 160 310 210 280 Z" fill="#b45309" stroke="#78350f" stroke-width="4" />
+
+  <!-- Right Pan (Produce / آم، کنو، کپاس) -->
+  <path d="M 352 210 L 322 280" stroke="#92400e" stroke-width="4" />
+  <path d="M 352 210 L 382 280" stroke="#92400e" stroke-width="4" />
+  <path d="M 302 280 Q 352 310 402 280 Z" fill="#15803d" stroke="#166534" stroke-width="4" />
+  
+  <!-- Base Stand -->
+  <path d="M 200 340 L 312 340" stroke="#78350f" stroke-width="14" stroke-linecap="round" />
+  <circle cx="256" cy="140" r="14" fill="#d97706" />
+
+  <!-- Urdu Script Text in Seal -->
+  <text x="256" y="395" font-family="'Gulzar', 'Noto Nastaliq Urdu', serif" font-size="44" font-weight="bold" fill="#78350f" text-anchor="middle" direction="rtl">اپنا کھاتہ</text>
+  <text x="256" y="430" font-family="'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="700" letter-spacing="4" fill="#92400e" text-anchor="middle">APNA KHATA</text>
+</svg>

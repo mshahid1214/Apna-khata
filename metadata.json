@@ -1,0 +1,8 @@
+{
+  "name": "Remix Apna Khata | اپنا کھاتہ",
+  "description": "Mobile-first PWA digitalising paper slips and bahi-khata records in the South Punjab fruit and cotton supply chain.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,167 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Admin access depends on specific admin document or verified developer identity
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'zubairdev0@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isParticipant(data) {
+      return (
+        request.auth.uid in data.participantUids ||
+        ('createdBy' in data && data.createdBy == request.auth.uid) ||
+        ('operatorUid' in data && data.operatorUid == request.auth.uid) ||
+        ('farmerId' in data && data.farmerId == request.auth.uid) ||
+        ('transporterUid' in data && data.transporterUid == request.auth.uid) ||
+        (request.auth.token.phone_number != null && request.auth.token.phone_number in data.participantUids)
+      );
+    }
+
+    // Connection Health Check
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Admin Access Verification Check (single-document get only, no list)
+    match /admins/{adminId} {
+      allow get: if isSignedIn() && isValidId(adminId);
+      allow list: if false;
+      allow write: if false;
+    }
+
+    // User Profiles:
+    // Users can create their own profile, but cannot set isVerified = true.
+    // Users can update their profile, but are strictly blocked from changing their own role or isVerified status.
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidId(userId) &&
+                    incoming().keys().hasAll(['id', 'name', 'phone', 'role', 'district', 'consentAccepted']) &&
+                    incoming().id == request.auth.uid &&
+                    incoming().name is string && incoming().name.size() <= 100 &&
+                    incoming().phone is string && incoming().phone.size() <= 30 &&
+                    incoming().district is string && incoming().district.size() <= 50 &&
+                    incoming().consentAccepted == true &&
+                    (!('isVerified' in incoming()) || incoming().isVerified == false);
+      allow update: if isSignedIn() && (
+        (request.auth.uid == userId &&
+         incoming().id == existing().id &&
+         incoming().role == existing().role &&
+         (!('isVerified' in incoming()) || incoming().isVerified == existing().isVerified)) ||
+        isAdmin()
+      );
+      allow delete: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Shared Mandi Sale Slips
+    match /sale_slips/{slipId} {
+      allow get: if isSignedIn() && isValidId(slipId) && (isParticipant(resource.data) || isAdmin());
+      allow list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(slipId) &&
+                    incoming().createdBy == request.auth.uid &&
+                    incoming().participantUids is list;
+      allow update: if isSignedIn() && isValidId(slipId) && (isParticipant(existing()) || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && existing().createdBy == request.auth.uid);
+    }
+
+    // Khata Bahi Entries
+    match /khata_entries/{entryId} {
+      allow get: if isSignedIn() && isValidId(entryId) && (isParticipant(resource.data) || isAdmin());
+      allow list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(entryId) &&
+                    incoming().createdBy == request.auth.uid &&
+                    incoming().participantUids is list;
+      allow update: if isSignedIn() && isValidId(entryId) && (isParticipant(existing()) || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && existing().createdBy == request.auth.uid);
+    }
+
+    // Cold Storage Inventory Items
+    match /cold_storage_items/{itemId} {
+      allow get, list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(itemId);
+      allow update: if isSignedIn() && isValidId(itemId) && (isParticipant(existing()) || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && existing().operatorUid == request.auth.uid);
+    }
+
+    // Cold Storage Gate Passes
+    match /cold_storage_gate_passes/{gatePassId} {
+      allow get, list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(gatePassId);
+      allow update, delete: if isAdmin() || (isSignedIn() && existing().operatorUid == request.auth.uid);
+    }
+
+    // Cold Storage Bookings
+    match /cold_storage_bookings/{bookingId} {
+      allow get, list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(bookingId);
+      allow update: if isSignedIn() && isValidId(bookingId) && (isParticipant(existing()) || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && (
+        existing().farmerId == request.auth.uid || existing().operatorUid == request.auth.uid
+      ));
+    }
+
+    // Consignment Bilties
+    match /bilties/{biltyId} {
+      allow get, list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(biltyId);
+      allow update: if isSignedIn() && isValidId(biltyId) && (isParticipant(existing()) || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && existing().transporterUid == request.auth.uid);
+    }
+
+    // Lots
+    match /lots/{lotId} {
+      allow get, list: if isSignedIn() && (isParticipant(resource.data) || isAdmin());
+      allow create: if isSignedIn() && isValidId(lotId);
+      allow update: if isSignedIn() && isValidId(lotId) && (isParticipant(existing()) || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && existing().farmerId == request.auth.uid);
+    }
+
+    // Contact Parties
+    match /parties/{partyId} {
+      allow get, list: if isSignedIn() && (
+        resource.data.ownerUid == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && isValidId(partyId) && incoming().ownerUid == request.auth.uid;
+      allow update, delete: if isSignedIn() && (
+        existing().ownerUid == request.auth.uid || isAdmin()
+      );
+    }
+
+    // Public QR Verification Records (Non-Sensitive)
+    // CRITICAL: Strictly readable by single-document get only, NEVER list!
+    match /public_verifications/{verificationId} {
+      allow get: if isValidId(verificationId);
+      allow list: if false; // strictly never list
+      allow create, update: if isSignedIn() && isValidId(verificationId);
+      allow delete: if isAdmin();
+    }
+  }
+}

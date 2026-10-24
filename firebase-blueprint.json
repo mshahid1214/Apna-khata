@@ -1,0 +1,266 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with role, district, and privacy consent without collecting CNIC or national ID.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Auth UID" },
+        "name": { "type": "string", "maxLength": 100, "description": "Full Name" },
+        "phone": { "type": "string", "maxLength": 30, "description": "Phone number" },
+        "role": { "type": "string", "enum": ["farmer", "arhti", "cold_storage", "transporter", "buyer"] },
+        "district": { "type": "string", "maxLength": 50, "description": "South Punjab District" },
+        "consentAccepted": { "type": "boolean", "description": "Privacy consent agreement" },
+        "consentDate": { "type": "string", "description": "Date consent was provided" },
+        "isVerified": { "type": "boolean", "description": "Admin verification status for operators and arhtis" },
+        "email": { "type": "string", "description": "Optional email if Google login used" },
+        "createdAt": { "type": "string", "description": "ISO creation date" },
+        "updatedAt": { "type": "string", "description": "ISO update date" }
+      },
+      "required": ["id", "name", "phone", "role", "district", "consentAccepted"]
+    },
+    "SaleSlip": {
+      "title": "SaleSlip",
+      "description": "Mandi auction sale slip shared between farmer, arhti, and buyer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Slip ID" },
+        "serialNumber": { "type": "string", "maxLength": 50 },
+        "date": { "type": "string", "maxLength": 20 },
+        "farmerId": { "type": "string" },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "buyerId": { "type": "string" },
+        "buyerName": { "type": "string", "maxLength": 100 },
+        "arhtiId": { "type": "string" },
+        "arhtiName": { "type": "string", "maxLength": 100 },
+        "commodity": { "type": "string", "enum": ["mango", "citrus", "dates", "cotton"] },
+        "variety": { "type": "string", "maxLength": 100 },
+        "grade": { "type": "string", "maxLength": 50 },
+        "crateCount": { "type": "number" },
+        "unit": { "type": "string", "enum": ["kg", "man", "ton", "peti"] },
+        "grossWeight": { "type": "number" },
+        "tareWeight": { "type": "number" },
+        "netWeight": { "type": "number" },
+        "ratePerUnit": { "type": "number" },
+        "grossAmount": { "type": "number" },
+        "totalDeductions": { "type": "number" },
+        "netPayable": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "cancelled"] },
+        "notes": { "type": "string", "maxLength": 500 },
+        "participantUids": { "type": "array" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["serialNumber", "date", "farmerName", "arhtiName", "commodity", "netWeight", "netPayable", "status"]
+    },
+    "KhataEntry": {
+      "title": "KhataEntry",
+      "description": "Double-entry bahi ledger between farmer and arhti.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "maxLength": 20 },
+        "farmerId": { "type": "string" },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "arhtiId": { "type": "string" },
+        "arhtiName": { "type": "string", "maxLength": 100 },
+        "entryType": { "type": "string" },
+        "flowType": { "type": "string", "enum": ["given", "received"] },
+        "description": { "type": "string", "maxLength": 500 },
+        "amountPKR": { "type": "number" },
+        "debitPKR": { "type": "number" },
+        "creditPKR": { "type": "number" },
+        "runningBalancePKR": { "type": "number" },
+        "season": { "type": "string", "maxLength": 100 },
+        "farmerConfirmed": { "type": "boolean" },
+        "arhtiConfirmed": { "type": "boolean" },
+        "participantUids": { "type": "array" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["date", "farmerName", "arhtiName", "amountPKR", "flowType"]
+    },
+    "ColdStorageInventory": {
+      "title": "ColdStorageInventory",
+      "description": "Produce stored in cold room facilities.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "facilityId": { "type": "string" },
+        "operatorUid": { "type": "string" },
+        "inwardReceiptNumber": { "type": "string", "maxLength": 50 },
+        "farmerId": { "type": "string" },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "commodity": { "type": "string" },
+        "variety": { "type": "string", "maxLength": 100 },
+        "initialQuantityTons": { "type": "number" },
+        "currentRemainingTons": { "type": "number" },
+        "dateIn": { "type": "string", "maxLength": 20 },
+        "chamberRack": { "type": "string", "maxLength": 100 },
+        "conditionNotes": { "type": "string", "maxLength": 500 },
+        "ratePerTonPerDayPKR": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "cleared"] },
+        "participantUids": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["facilityId", "operatorUid", "farmerName", "commodity", "initialQuantityTons", "status"]
+    },
+    "ColdStorageGatePass": {
+      "title": "ColdStorageGatePass",
+      "description": "Cold storage exit gate pass and billing receipt.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "gatePassNumber": { "type": "string", "maxLength": 50 },
+        "facilityId": { "type": "string" },
+        "operatorUid": { "type": "string" },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "commodity": { "type": "string" },
+        "variety": { "type": "string", "maxLength": 100 },
+        "quantityOutTons": { "type": "number" },
+        "remainingStockTons": { "type": "number" },
+        "dateIn": { "type": "string", "maxLength": 20 },
+        "dateOut": { "type": "string", "maxLength": 20 },
+        "daysStored": { "type": "number" },
+        "ratePerTonPerDayPKR": { "type": "number" },
+        "totalRentPKR": { "type": "number" },
+        "receiverOrDriver": { "type": "string", "maxLength": 100 },
+        "participantUids": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["gatePassNumber", "facilityId", "operatorUid", "quantityOutTons", "totalRentPKR"]
+    },
+    "ColdStorageBooking": {
+      "title": "ColdStorageBooking",
+      "description": "Farmer space booking reservation with a cold storage facility.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bookingNumber": { "type": "string", "maxLength": 50 },
+        "facilityId": { "type": "string" },
+        "facilityName": { "type": "string", "maxLength": 100 },
+        "operatorUid": { "type": "string" },
+        "farmerId": { "type": "string" },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "farmerPhone": { "type": "string", "maxLength": 30 },
+        "commodity": { "type": "string" },
+        "variety": { "type": "string", "maxLength": 100 },
+        "requestedTons": { "type": "number" },
+        "requestedStartDate": { "type": "string", "maxLength": 20 },
+        "estimatedDurationDays": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined"] },
+        "participantUids": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["bookingNumber", "farmerId", "farmerName", "commodity", "requestedTons", "status"]
+    },
+    "Bilty": {
+      "title": "Bilty",
+      "description": "Transport consignment note.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "biltyNumber": { "type": "string", "maxLength": 50 },
+        "date": { "type": "string", "maxLength": 20 },
+        "transporterUid": { "type": "string" },
+        "senderName": { "type": "string", "maxLength": 100 },
+        "receiverName": { "type": "string", "maxLength": 100 },
+        "lotSummary": { "type": "string", "maxLength": 200 },
+        "vehicleNumber": { "type": "string", "maxLength": 50 },
+        "driverName": { "type": "string", "maxLength": 100 },
+        "origin": { "type": "string", "maxLength": 100 },
+        "destination": { "type": "string", "maxLength": 100 },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "freightPKR": { "type": "number" },
+        "advancePaidPKR": { "type": "number" },
+        "balancePayablePKR": { "type": "number" },
+        "status": { "type": "string", "enum": ["loaded", "in_transit", "delivered"] },
+        "participantUids": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["biltyNumber", "senderName", "receiverName", "vehicleNumber", "freightPKR", "status"]
+    },
+    "Lot": {
+      "title": "Lot",
+      "description": "Crop harvest lot for provenance and QR traceability.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "lotNumber": { "type": "string", "maxLength": 50 },
+        "farmerId": { "type": "string" },
+        "farmerName": { "type": "string", "maxLength": 100 },
+        "crop": { "type": "string" },
+        "variety": { "type": "string", "maxLength": 100 },
+        "grade": { "type": "string", "maxLength": 50 },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "harvestDate": { "type": "string", "maxLength": 20 },
+        "farmName": { "type": "string", "maxLength": 100 },
+        "participantUids": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["lotNumber", "farmerId", "farmerName", "crop", "variety", "quantity"]
+    },
+    "PublicVerification": {
+      "title": "PublicVerification",
+      "description": "Non-sensitive public certificate records queryable via QR code without exposing private ledger data.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["slip", "lot"] },
+        "identifier": { "type": "string", "maxLength": 50 },
+        "title": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "maxLength": 20 },
+        "commodity": { "type": "string", "maxLength": 50 },
+        "variety": { "type": "string", "maxLength": 100 },
+        "grade": { "type": "string", "maxLength": 50 },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "maxLength": 50 },
+        "netPayable": { "type": "number" },
+        "isVerified": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["type", "identifier", "title", "date", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles with role, district, and privacy agreement."
+    },
+    "/sale_slips/{slipId}": {
+      "schema": "SaleSlip",
+      "description": "Shared mandi sale slips visible to involved parties."
+    },
+    "/khata_entries/{entryId}": {
+      "schema": "KhataEntry",
+      "description": "Shared bahi ledger entries between farmer and arhti."
+    },
+    "/cold_storage_items/{itemId}": {
+      "schema": "ColdStorageInventory",
+      "description": "Cold storage stored items accessible to facility operator and depositing farmer."
+    },
+    "/cold_storage_gate_passes/{gatePassId}": {
+      "schema": "ColdStorageGatePass",
+      "description": "Cold storage exit passes."
+    },
+    "/cold_storage_bookings/{bookingId}": {
+      "schema": "ColdStorageBooking",
+      "description": "Cold storage booking requests."
+    },
+    "/bilties/{biltyId}": {
+      "schema": "Bilty",
+      "description": "Transport bilty records."
+    },
+    "/lots/{lotId}": {
+      "schema": "Lot",
+      "description": "Farm lots."
+    },
+    "/public_verifications/{verificationId}": {
+      "schema": "PublicVerification",
+      "description": "Public non-sensitive verification records for QR scanning."
+    }
+  }
+}
