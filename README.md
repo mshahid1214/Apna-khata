@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Apna Khata | اپنا کھاتہ
 ### Mobile-First Mandi Ledger & Shared Cloud Database for South Punjab Agricultural Supply Chain
 
@@ -167,3 +168,6 @@ An administrative portal is accessible via the Header shield icon or the More Se
 - **Operator Verification Console**:
   - Displays registered cold storage facilities and commission agents.
   - Allows admins to verify or revoke operator status (`isVerified: true/false`), issuing a certified mandi trust badge to approved facilities.
+=======
+# Hackertoberfest
+>>>>>>> 9334c30579413398c8b57774fbc41c9b0a9447b1
