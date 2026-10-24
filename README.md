@@ -135,16 +135,10 @@ Licenses above are listed from general knowledge of these projects. Before you p
 
 ## 6. A note on Gemini, Gemma and open-source AI
 
-This project uses **Gemini** (a Google cloud API), **not** an open-source model. Gemini is called only from `server.ts`, so the API key never reaches the browser.
+
 
 **Gemma** is Google's separate family of *open-weight* models, which you can download and run yourself. It is not used anywhere in this code. Note that Gemma is released under its own Gemma Terms of Use, which is not an OSI-approved open-source license, so "open weights" is the accurate description.
 
-If you want a fully open or self-hosted AI option later, you could:
-
-- Replace the two Gemini calls in `server.ts` with a locally hosted model (for example Gemma served through an inference server) behind the same JSON response format.
-- Use an open OCR engine such as **Tesseract** for printed text. Handwritten Urdu is harder, so test accuracy before switching.
-
-The two AI endpoints are isolated in `server.ts`, so changing the provider only affects that file.
 
 ### Open-source AI with Gemma (optional / planned)
 
